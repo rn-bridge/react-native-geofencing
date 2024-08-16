@@ -6,11 +6,14 @@ import {
   Text,
   PermissionsAndroid,
   Platform,
+  Alert,
 } from 'react-native';
 import {
   addGeofence,
   removeGeofence,
   getRegisteredGeofences,
+  requestLocation,
+  getLocationAuthorizationStatus,
 } from '@rn-bridge/react-native-geofencing';
 
 const Button = ({
@@ -43,16 +46,44 @@ export const App = () => {
       <Button
         textStyle={styles.textStyle}
         style={styles.button}
+        title="Request Location While Using"
+        onPress={async () => {
+          const response = await requestLocation({ allowWhileUsing: true });
+          console.log('requestLocation:', response);
+          Alert.alert('Status', `Location: ${response.location}`);
+        }}
+      />
+
+      <Button
+        textStyle={styles.textStyle}
+        style={styles.button}
+        title="Request Location Always"
+        onPress={async () => {
+          const response = await requestLocation({ allowAlways: true });
+          console.log('requestLocation:', response);
+          Alert.alert('Status', `Location: ${response.location}`);
+        }}
+      />
+
+      <Button
+        textStyle={styles.textStyle}
+        style={styles.button}
         title="Add Geo Fence"
-        onPress={() => {
-          addGeofence({
+        onPress={async () => {
+          const response = await addGeofence({
             id: 'a9957259-8036-4dcb-974c-34eae9b44bdb',
             latitude: 10.9314,
             longitude: 76.9781,
             radius: 500,
-          })
-            .then(console.log)
-            .catch(console.log);
+          });
+
+          console.log('addGeofence:', response);
+
+          const message = response.success
+            ? 'Successfully added geofence!!'
+            : 'Failed to add geofence!!';
+
+          Alert.alert('Status', message);
         }}
       />
 
@@ -60,10 +91,18 @@ export const App = () => {
         textStyle={styles.textStyle}
         style={styles.button}
         title="Remove Geo Fence"
-        onPress={() => {
-          removeGeofence('a9957259-8036-4dcb-974c-34eae9b44bdb')
-            .then(console.log)
-            .catch(console.log);
+        onPress={async () => {
+          const response = await removeGeofence(
+            'a9957259-8036-4dcb-974c-34eae9b44bdb'
+          );
+
+          console.log('removeGeofence:', response);
+
+          const message = response.success
+            ? 'Successfully removed geofence!!'
+            : response.error;
+
+          Alert.alert('Status', message);
         }}
       />
 
@@ -71,8 +110,21 @@ export const App = () => {
         textStyle={styles.textStyle}
         style={styles.button}
         title="Get Registered Geo Fences"
-        onPress={() => {
-          getRegisteredGeofences().then(console.log).catch(console.log);
+        onPress={async () => {
+          const response = await getRegisteredGeofences();
+          console.log('getRegisteredGeofences:', response);
+          Alert.alert('Status', JSON.stringify(response));
+        }}
+      />
+
+      <Button
+        textStyle={styles.textStyle}
+        style={styles.button}
+        title="Get Authorization Status"
+        onPress={async () => {
+          const response = await getLocationAuthorizationStatus();
+          console.log('getLocationAuthorizationStatus:', response);
+          Alert.alert('Status', `Location: ${response}`);
         }}
       />
     </View>

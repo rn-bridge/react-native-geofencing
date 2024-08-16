@@ -6,6 +6,9 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
     
     private var locationManager: CLLocationManager
     private var hasListeners = false
+    private var allowWhileUsing = false
+    private var allowAlways = false
+    private var authorizationSuccessCallback: RCTResponseSenderBlock?
     
     override init() {
         locationManager = CLLocationManager()
@@ -17,10 +20,33 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
         return true
     }
     
+    @objc(getLocationAuthorizationStatus:withReject:)
+    func getLocationAuthorizationStatus(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        resolve(getLocationAuthorizationStatus())
+    }
+    
+    @objc(requestLocation: withSuccessCallback:)
+    func requestLocation(params: NSDictionary, successCallback: @escaping RCTResponseSenderBlock) {
+        
+        guard let allowWhileUsing = params["allowWhileUsing"] as? Bool,
+              let allowAlways = params["allowAlways"] as? Bool else {
+            return
+        }
+        
+        self.allowWhileUsing = allowWhileUsing
+        self.allowAlways = allowAlways
+        authorizationSuccessCallback = successCallback
+        if allowAlways && CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
+            locationManager.requestAlwaysAuthorization()
+        } else {
+            locationManager.requestWhenInUseAuthorization()
+        }
+    }
+    
     @objc(getRegisteredGeofences:withReject:)
     func getRegisteredGeofences(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        if !isLocationAlwaysEnabled() {
-            reject("Permission", "Needed Authorization always but got \(getLocationNeededErrorString())", NSError(domain: "getRegisteredGeofences", code: 200))
+        if !isLocationAuthorized() {
+            reject("Permission", "Needed Authorization always but got \(getLocationAuthorizationStatus())", NSError(domain: "getRegisteredGeofences", code: 200))
             return
         }
         
@@ -32,15 +58,8 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
     
     @objc(addGeofence:withResolve:withReject:)
     func addGeofence(params: NSDictionary, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        if !isLocationAlwaysEnabled() {
-            locationManager.requestWhenInUseAuthorization()
-            reject("Permission", "Needed Authorization always but got \(getLocationNeededErrorString())", NSError(domain: "addGeofence", code: 200))
-            return
-        }
-        
-        if !locationManager.allowsBackgroundLocationUpdates {
-            locationManager.allowsBackgroundLocationUpdates = true
-            reject("Permission", "Background location not enabled", NSError(domain: "addGeofence", code: 200))
+        if !isLocationAuthorized() {
+            reject("Permission", "Needed Authorization always but got \(getLocationAuthorizationStatus())", NSError(domain: "addGeofence", code: 200))
             return
         }
         
@@ -55,15 +74,15 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
         let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let region = CLCircularRegion(center: center, radius: radius, identifier: id)
         locationManager.startMonitoring(for: region)
-        resolve(["success": true, "id": id, "type": "add"])
+        resolve(["success": true, "id": id])
     }
     
     @objc(removeGeofence:withResolve:withReject:)
     func removeGeofence(id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if removeGeofence(id) {
-            resolve(["success": true, "id": id, "type": "remove"])
+            resolve(["success": true, "id": id])
         } else {
-            reject("Invalid", "Geofence is not registered with the provided id", NSError(domain: "removeGeofence", code: 200))
+            resolve(["success": false, "error": "Geofence is not registered with the provided id"])
         }
     }
     
@@ -71,9 +90,9 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
     func removeAllGeofence(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         do {
             try removeAll()
-            resolve(["success": true, "type": "removeAll"])
+            resolve(["success": true])
         } catch let error {
-            reject("Error", "Failed to remove", error as NSError)
+            resolve(["success": false, "error": error.localizedDescription])
         }
     }
     
@@ -130,28 +149,39 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if status == .authorizedAlways {
             locationManager.allowsBackgroundLocationUpdates = true
+            authorizationSuccessCallback?([["success": true, "location": getLocationAuthorizationStatus()]])
         } else if status == .authorizedWhenInUse {
-            locationManager.requestAlwaysAuthorization()
+            if self.allowAlways  {
+                locationManager.requestAlwaysAuthorization()
+            } else {
+                authorizationSuccessCallback?([["success": true, "location": getLocationAuthorizationStatus()]])
+            }
+        } else {
+            authorizationSuccessCallback?([["success": false, "location": getLocationAuthorizationStatus()]])
         }
+        
+        authorizationSuccessCallback = nil
     }
     
-    private func isLocationAlwaysEnabled() -> Bool {
-        return CLLocationManager.authorizationStatus() == .authorizedAlways
+    private func isLocationAuthorized() -> Bool {
+        return CLLocationManager.authorizationStatus() == .authorizedWhenInUse || CLLocationManager.authorizationStatus() == .authorizedAlways
     }
     
-    private func getLocationNeededErrorString() -> String {
+    private func getLocationAuthorizationStatus() -> String {
         let authorizationStatus = CLLocationManager.authorizationStatus()
         var message: String
         
         switch authorizationStatus {
+        case .authorizedAlways:
+            message = "Always"
+        case .authorizedWhenInUse:
+            message = "When In Use"
         case .notDetermined:
             message = "Not determined"
         case .restricted:
             message = "Restricted"
         case .denied:
             message = "Denied"
-        case .authorizedWhenInUse:
-            message = "Authorized when in use"
         default:
             message = "Unknown"
         }

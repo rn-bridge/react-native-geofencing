@@ -28,6 +28,14 @@ export const Events = {
   Exit: 'onExit',
 };
 
+export const Authorization = {
+  Always: 'Always',
+  WhenInUse: 'When In Use',
+  Restricted: 'Restricted',
+  Denied: 'Denied',
+  Unknown: 'Unknown',
+};
+
 const nativeModule = Platform.OS === 'ios' ? Geofencing : null;
 const geofencingEventEmitter = new NativeEventEmitter(nativeModule);
 
@@ -49,6 +57,37 @@ AppRegistry.registerHeadlessTask(
   () => onGeofenceTransition
 );
 
+type requestLocationParamsType = {
+  allowWhileUsing?: boolean;
+  allowAlways?: boolean;
+};
+
+type requestLocationResponseType = {
+  success: boolean;
+  location: string;
+};
+
+export async function requestLocation(
+  params: requestLocationParamsType = {}
+): Promise<requestLocationResponseType> {
+  const requestParams = {
+    allowWhileUsing: params.allowWhileUsing ?? false,
+    allowAlways: params.allowAlways ?? false,
+  };
+  return new Promise((resolve) => {
+    Geofencing.requestLocation(
+      requestParams,
+      (response: requestLocationResponseType) => {
+        resolve(response);
+      }
+    );
+  });
+}
+
+export async function getLocationAuthorizationStatus(): Promise<string> {
+  return await Geofencing.getLocationAuthorizationStatus();
+}
+
 type paramsType = {
   id: string;
   latitude: number;
@@ -59,7 +98,7 @@ type paramsType = {
 type returnType = {
   success: boolean;
   id: string;
-  type: string;
+  error: string;
 };
 
 export async function addGeofence(

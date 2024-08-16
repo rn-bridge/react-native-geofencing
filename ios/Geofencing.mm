@@ -5,6 +5,12 @@
 
 @interface RCT_EXTERN_MODULE(Geofencing, RCTEventEmitter)
 
+RCT_EXTERN_METHOD(getLocationAuthorizationStatus:(RCTPromiseResolveBlock)resolve
+                  withReject:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(requestLocation:(NSDictionary *)params
+                  withSuccessCallback:(RCTResponseSenderBlock)successCallback)
+
 RCT_EXTERN_METHOD(getRegisteredGeofences:(RCTPromiseResolveBlock)resolve
                   withReject:(RCTPromiseRejectBlock)reject)
 
