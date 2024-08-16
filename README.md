@@ -41,7 +41,7 @@ It’s important to ensure you’ve enabled the necessary background modes. Here
 - Enable `Background Modes` capability.
 - Check `Location updates`
 
-<img width="743" alt="Screenshot 2024-08-15 at 7 27 40 PM" src="https://github.com/user-attachments/assets/87d0215e-e1c9-45b0-9488-4f0e9509a21b">
+<img width="743" alt="xcode" src="https://github.com/user-attachments/assets/70b0d892-f22b-4df8-95d9-954c54d28a7e">
 
 <br></br>
 Your `Info.plist` should look like this, Explain why the background location is required!!
@@ -83,6 +83,8 @@ Your `AndroidManifest.xml` should look liks this
 
 ### Methods
 
+* [`requestLocation`](#requestLocation)
+* [`getLocationAuthorizationStatus`](#getLocationAuthorizationStatus)
 * [`addGeofence`](#addGeofence)
 * [`removeGeofence`](#removeGeofence)
 * [`getRegisteredGeofences`](#getRegisteredGeofences)
@@ -93,13 +95,45 @@ Your `AndroidManifest.xml` should look liks this
 * [`onExit`](#onExit)
 * [`removeOnEnterListener`](#removeOnEnterListener)
 * [`removeOnExitListener`](#removeOnExitListener)
+* [`isOnEnterListenerAdded`](#isOnEnterListenerAdded)
+* [`isOnExitListenerAdded`](#isOnExitListenerAdded)
 
 ---
 
 ## Usage
 
+### requestLocation
+```javascript
+import { requestLocation } from '@rn-bridge/react-native-geofencing';
+
+const response = await requestLocation({ allowWhileUsing: true });
+console.log('requestLocation:', response); // { success: true, location: "WhenInUse" }
+```
+
+To request background location:
+```javascript
+import { requestLocation } from '@rn-bridge/react-native-geofencing';
+
+const response = await requestLocation({ allowAlways: true });
+console.log('requestLocation:', response); // { success: true, location: "Always" }
+```
+Supported options:
+* `allowWhileUsing` (Boolean) - App can use all location services and receive events while the app is in use.
+* `allowAlways` (Boolean) - App can use all location services and receive events even if the user is not aware that your app is running. If your app isn’t running, the system launches your app and delivers the event.
+
+> [!WARNING]
+> Android needs background location for geofencing to work. You must request location `Allow all the time` from the user. While iOS works with both `while using` and `always`
+
+### getLocationAuthorizationStatus
+```javascript
+import { getLocationAuthorizationStatus } from '@rn-bridge/react-native-geofencing';
+
+const response = await getLocationAuthorizationStatus();
+console.log('getLocationAuthorizationStatus:', response); // "WhileInUse", "Always", "Denied"
+```
+
 ### addGeofence
-```js
+```javascript
 import { addGeofence } from '@rn-bridge/react-native-geofencing';
 
 const response = await addGeofence({
@@ -134,6 +168,27 @@ const response = await getRegisteredGeofences()
 console.log(response) // [id, ...]
 ```
 
+## Constants
+```javascript
+import { Events } from '@rn-bridge/react-native-geofencing';
+```
+| Constant  |  Value |
+|---|---|
+| Events.onEnter  |  "onEnter" |
+| Events.onExit  |  "onExit" |
+
+```javascript
+import { Authorization } from '@rn-bridge/react-native-geofencing';
+```
+| Constant  |  Value |
+|---|---|
+| Authorization.Always  |  "Always" |
+| Authorization.WhenInUse  |  "WhenInUse" |
+| Authorization.Restricted  |  "Restricted" |
+| Authorization.Denied  |  "Denied" |
+| Authorization.NotDetermined  |  "NotDetermined" |
+| Authorization.Unknown  |  "Unknown" |
+
 > [!IMPORTANT]
 > ## Listening for location transitions
 
@@ -142,7 +197,7 @@ console.log(response) // [id, ...]
 import { Geofence, Events } from '@rn-bridge/react-native-geofencing';
 
 Geofence.onEnter((ids: string[]) => {
-  console.log(Events.Enter, ids);
+  console.log(Events.Enter, ids); // [id1, id2, ...]
 });
 ```
 
@@ -151,7 +206,7 @@ Geofence.onEnter((ids: string[]) => {
 import { Geofence, Events } from '@rn-bridge/react-native-geofencing';
 
 Geofence.onExit((ids: string[]) => {
-  console.log(Events.Exit, ids);
+  console.log(Events.Exit, ids); // [id1, id2, ...]
 });
 ```
 
@@ -169,3 +224,16 @@ import { Geofence } from '@rn-bridge/react-native-geofencing';
 Geofence.removeOnExitListener()
 ```
 
+### isOnEnterListenerAdded
+```javascript
+import { Geofence } from '@rn-bridge/react-native-geofencing';
+
+Geofence.isOnEnterListenerAdded() // true or false
+```
+
+### isOnExitListenerAdded
+```javascript
+import { Geofence } from '@rn-bridge/react-native-geofencing';
+
+Geofence.isOnExitListenerAdded() // true or false
+```
