@@ -175,9 +175,9 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
         case .authorizedAlways:
             message = "Always"
         case .authorizedWhenInUse:
-            message = "When In Use"
+            message = "WhenInUse"
         case .notDetermined:
-            message = "Not determined"
+            message = "NotDetermined"
         case .restricted:
             message = "Restricted"
         case .denied:

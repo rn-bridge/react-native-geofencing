@@ -56,7 +56,6 @@ class GeofenceManager(private val context: Context) {
         val map = Arguments.createMap().apply {
           putBoolean("success", true)
           putString("id", geofence[0].requestId)
-          putString("type", "add")
         }
         promise.resolve(map)
       }.addOnFailureListener { exception ->
@@ -64,7 +63,6 @@ class GeofenceManager(private val context: Context) {
         val map = Arguments.createMap().apply {
           putBoolean("success", false)
           putString("id", geofence[0].requestId)
-          putString("type", "add")
           putString("error", exception.message)
         }
         promise.resolve(map)
@@ -78,7 +76,6 @@ class GeofenceManager(private val context: Context) {
         val map = Arguments.createMap().apply {
           putBoolean("success", true)
           putString("id", id)
-          putString("type", "remove")
         }
         promise.resolve(map)
       }.addOnFailureListener { exception ->
@@ -86,7 +83,6 @@ class GeofenceManager(private val context: Context) {
         val map = Arguments.createMap().apply {
           putBoolean("success", false)
           putString("id", id)
-          putString("type", "remove")
           putString("error", exception.message)
         }
         promise.resolve(map)
@@ -99,14 +95,12 @@ class GeofenceManager(private val context: Context) {
         resetSharedPreferences()
         val map = Arguments.createMap().apply {
           putBoolean("success", true)
-          putString("type", "removeAll")
         }
         promise.resolve(map)
       }.addOnFailureListener { exception ->
         Log.d(TAG, "deregisterGeofence: Failure\n$exception")
         val map = Arguments.createMap().apply {
           putBoolean("success", false)
-          putString("type", "removeAll")
           putString("error", exception.message)
         }
         promise.resolve(map)

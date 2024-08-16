@@ -4,6 +4,7 @@ import {
   AppRegistry,
   NativeEventEmitter,
   type EventSubscription,
+  PermissionsAndroid,
 } from 'react-native';
 
 const LINKING_ERROR =
@@ -30,9 +31,10 @@ export const Events = {
 
 export const Authorization = {
   Always: 'Always',
-  WhenInUse: 'When In Use',
+  WhenInUse: 'WhenInUse',
   Restricted: 'Restricted',
   Denied: 'Denied',
+  NotDetermined: 'NotDetermined',
   Unknown: 'Unknown',
 };
 
@@ -67,6 +69,29 @@ type requestLocationResponseType = {
   location: string;
 };
 
+async function requestAndroidPermissions(
+  params: requestLocationParamsType
+): Promise<requestLocationResponseType> {
+  let granted = await PermissionsAndroid.request(
+    //@ts-ignore
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+  );
+
+  if (granted === PermissionsAndroid.RESULTS.GRANTED && params.allowAlways) {
+    granted = await PermissionsAndroid.request(
+      //@ts-ignore
+      PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION
+    );
+  }
+
+  const location = await getLocationAuthorizationStatusAndroid();
+
+  return {
+    success: PermissionsAndroid.RESULTS.GRANTED === granted,
+    location,
+  };
+}
+
 export async function requestLocation(
   params: requestLocationParamsType = {}
 ): Promise<requestLocationResponseType> {
@@ -74,6 +99,9 @@ export async function requestLocation(
     allowWhileUsing: params.allowWhileUsing ?? false,
     allowAlways: params.allowAlways ?? false,
   };
+  if (Platform.OS === 'android') {
+    return requestAndroidPermissions(requestParams);
+  }
   return new Promise((resolve) => {
     Geofencing.requestLocation(
       requestParams,
@@ -84,7 +112,33 @@ export async function requestLocation(
   });
 }
 
+async function getLocationAuthorizationStatusAndroid(): Promise<string> {
+  let location = 'Denied';
+  const whenInUse = await PermissionsAndroid.check(
+    //@ts-ignore
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+  );
+
+  const background = await PermissionsAndroid.check(
+    //@ts-ignore
+    PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION
+  );
+
+  if (whenInUse) {
+    location = 'WhenInUse';
+  }
+
+  if (background) {
+    location = 'Always';
+  }
+
+  return location;
+}
+
 export async function getLocationAuthorizationStatus(): Promise<string> {
+  if (Platform.OS === 'android') {
+    return await getLocationAuthorizationStatusAndroid();
+  }
   return await Geofencing.getLocationAuthorizationStatus();
 }
 

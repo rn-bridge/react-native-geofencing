@@ -1,13 +1,4 @@
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Text,
-  PermissionsAndroid,
-  Platform,
-  Alert,
-} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Alert } from 'react-native';
 import {
   addGeofence,
   removeGeofence,
@@ -35,12 +26,6 @@ const Button = ({
 };
 
 export const App = () => {
-  React.useEffect(() => {
-    if (Platform.OS === 'android') {
-      PermissionsAndroid.request('android.permission.ACCESS_FINE_LOCATION');
-    }
-  }, []);
-
   return (
     <View style={styles.container}>
       <Button
