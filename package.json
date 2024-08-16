@@ -1,6 +1,6 @@
 {
   "name": "@rn-bridge/react-native-geofencing",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Native modules to determine if a location is within defined geographical boundaries",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
@@ -49,14 +49,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sriharshamadamanchi/rn-bridge/react-native-geofencing.git"
+    "url": "https://github.com/rn-bridge/react-native-geofencing"
   },
   "author": "sriharshamadamanchi <sriharshamadamanchiz@gmail.com> (https://github.com/sriharshamadamanchi)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sriharshamadamanchi/rn-bridge/react-native-geofencing/issues"
+    "url": "https://github.com/rn-bridge/react-native-geofencing/issues"
   },
-  "homepage": "https://github.com/sriharshamadamanchi/rn-bridge/react-native-geofencing#readme",
+  "homepage": "https://github.com/rn-bridge",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
