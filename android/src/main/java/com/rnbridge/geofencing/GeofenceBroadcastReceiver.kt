@@ -32,10 +32,10 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
       val event =
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) "onEnter" else "onExit"
       val ids = triggeringGeofences?.map { it.requestId }?.toTypedArray().orEmpty()
-      val i = Intent(context, GeofenceHeadlessJS::class.java)
-      i.putExtra("event", event)
-      i.putExtra("ids", ids)
-      context.startService(i)
+      val headlessJSIntent = Intent(context, GeofenceHeadlessJS::class.java)
+      headlessJSIntent.putExtra("event", event)
+      headlessJSIntent.putExtra("ids", ids)
+      context.startService(headlessJSIntent)
       HeadlessJsTaskService.acquireWakeLockNow(context)
     } else {
       Log.e(TAG, "Error in GeofenceBroadcastReceiver")

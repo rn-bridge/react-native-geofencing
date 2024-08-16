@@ -11,7 +11,7 @@ class GeofenceHeadlessJS : HeadlessJsTaskService() {
       HeadlessJsTaskConfig(
         "onGeofenceTransition",
         Arguments.fromBundle(it),
-        8000,
+        10000,
         true
       )
     }

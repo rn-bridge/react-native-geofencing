@@ -3,10 +3,11 @@ import {
   Platform,
   AppRegistry,
   NativeEventEmitter,
+  type EventSubscription,
 } from 'react-native';
 
 const LINKING_ERROR =
-  `The package 'react-native-geofencing' doesn't seem to be linked. Make sure: \n\n` +
+  `The package '@rn-bridge/react-native-geofencing' doesn't seem to be linked. Make sure: \n\n` +
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
@@ -22,10 +23,24 @@ const Geofencing = NativeModules.Geofencing
       }
     );
 
-const emitter = Platform.OS === 'ios' ? Geofencing : null;
-const geofencingEventEmitter = new NativeEventEmitter(emitter);
+export const Events = {
+  Enter: 'onEnter',
+  Exit: 'onExit',
+};
+
+const nativeModule = Platform.OS === 'ios' ? Geofencing : null;
+const geofencingEventEmitter = new NativeEventEmitter(nativeModule);
+
+async function delay(duration: number): Promise<boolean> {
+  return new Promise((resolve) => setTimeout(() => resolve(true), duration));
+}
 
 async function onGeofenceTransition(params: { event: string; ids: string[] }) {
+  if (!Geofence.isOnEnterListenerAdded() || !Geofence.isOnExitListenerAdded()) {
+    console.log('Listeners not added, waiting for 5sec...');
+    await delay(5000);
+  }
+
   geofencingEventEmitter.emit(params.event, params.ids);
 }
 
@@ -33,11 +48,6 @@ AppRegistry.registerHeadlessTask(
   'onGeofenceTransition',
   () => onGeofenceTransition
 );
-
-export const Events = {
-  Enter: 'onEnter',
-  Exit: 'onExit',
-};
 
 type paramsType = {
   id: string;
@@ -82,19 +92,25 @@ export async function removeAllGeofence(): Promise<removeAllGeofenceReturnType> 
 }
 
 export const Geofence = {
-  onEnter: (callback: (ids: string[]) => void) => {
+  onEnter: (callback: (ids: string[]) => void): EventSubscription => {
     return geofencingEventEmitter.addListener(Events.Enter, callback);
   },
 
-  onExit: (callback: (ids: string[]) => void) => {
+  onExit: (callback: (ids: string[]) => void): EventSubscription => {
     return geofencingEventEmitter.addListener(Events.Exit, callback);
   },
 
-  removeOnEnterListener: () => {
-    return geofencingEventEmitter.removeAllListeners(Events.Enter);
+  removeOnEnterListener: (): void => {
+    geofencingEventEmitter.removeAllListeners(Events.Enter);
   },
 
-  removeOnExitListener: () => {
-    return geofencingEventEmitter.removeAllListeners(Events.Exit);
+  removeOnExitListener: (): void => {
+    geofencingEventEmitter.removeAllListeners(Events.Exit);
+  },
+  isOnEnterListenerAdded: (): boolean => {
+    return geofencingEventEmitter.listenerCount(Events.Enter) > 0;
+  },
+  isOnExitListenerAdded: (): boolean => {
+    return geofencingEventEmitter.listenerCount(Events.Exit) > 0;
   },
 };
