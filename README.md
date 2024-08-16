@@ -142,7 +142,7 @@ const response = await addGeofence({
         longitude: 100.281585,
         radius: 500
     })
-console.log(response) // { success: true, id, type: "add" }
+console.log(response) // { success: true, id }
 ```
 Supported options:
 * `id` (String) - Set the ID of the geofence. This is a string to identify this geofence.
@@ -155,7 +155,7 @@ Supported options:
 import { removeGeofence } from '@rn-bridge/react-native-geofencing';
 
 const response = await removeGeofence(id)
-console.log(response) // { success: true, id, type: "remove" }
+console.log(response) // { success: true, id }
 ```
 Supported options:
 * `id` (String) - The ID uniquely identifies a geofence, enabling precise and efficient removal by referencing the specific geofence without ambiguity.
