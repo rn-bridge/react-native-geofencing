@@ -85,6 +85,7 @@ Your `AndroidManifest.xml` should look liks this
 
 * [`requestLocation`](#requestLocation)
 * [`getLocationAuthorizationStatus`](#getLocationAuthorizationStatus)
+* [`getCurrentLocation`](#getCurrentLocation)
 * [`addGeofence`](#addGeofence)
 * [`removeGeofence`](#removeGeofence)
 * [`getRegisteredGeofences`](#getRegisteredGeofences)
@@ -107,7 +108,13 @@ Your `AndroidManifest.xml` should look liks this
 import { requestLocation } from '@rn-bridge/react-native-geofencing';
 
 const response = await requestLocation({ allowWhileUsing: true });
-console.log('requestLocation:', response); // { success: true, location: "WhenInUse" }
+```
+Response:
+```json
+{
+  "success": true,
+  "location": "WhenInUse"
+}
 ```
 
 To request background location:
@@ -115,7 +122,13 @@ To request background location:
 import { requestLocation } from '@rn-bridge/react-native-geofencing';
 
 const response = await requestLocation({ allowAlways: true });
-console.log('requestLocation:', response); // { success: true, location: "Always" }
+```
+Response:
+```json
+{
+  "success": true,
+  "location": "Always"
+}
 ```
 Supported options:
 * `allowWhileUsing` (Boolean) - App can use all location services and receive events while the app is in use.
@@ -129,7 +142,29 @@ Supported options:
 import { getLocationAuthorizationStatus } from '@rn-bridge/react-native-geofencing';
 
 const response = await getLocationAuthorizationStatus();
-console.log('getLocationAuthorizationStatus:', response); // "WhileInUse", "Always", "Denied"
+```
+Response: `WhileInUse` `Always` `Denied`
+
+### getCurrentLocation
+```javascript
+import { getCurrentLocation } from '@rn-bridge/react-native-geofencing';
+
+const response = await getCurrentLocation();
+```
+Reponse: 
+```json
+{
+  "altitude": 0,
+  "city": "Coimbatore",
+  "country": "India",
+  "isoCountryCode": "IN",
+  "latitude": 10.9314,
+  "longitude": 76.9781,
+  "name": "Eachanari", 
+  "postalCode": "641021",
+  "state": "TN",
+  "timeZone": "Asia/Kolkata"
+}
 ```
 
 ### addGeofence
@@ -142,7 +177,14 @@ const response = await addGeofence({
         longitude: 100.281585,
         radius: 500
     })
-console.log(response) // { success: true, id }
+console.log(response)
+```
+Response:
+```json
+{
+  "success": true,
+  "id": "a9957259-8036-4dcb-974c-34eae9b44bdb"
+}
 ```
 Supported options:
 * `id` (String) - Set the ID of the geofence. This is a string to identify this geofence.
@@ -155,7 +197,13 @@ Supported options:
 import { removeGeofence } from '@rn-bridge/react-native-geofencing';
 
 const response = await removeGeofence(id)
-console.log(response) // { success: true, id }
+```
+Response:
+```json
+{
+  "success": true,
+  "id": "a9957259-8036-4dcb-974c-34eae9b44bdb"
+}
 ```
 Supported options:
 * `id` (String) - The ID uniquely identifies a geofence, enabling precise and efficient removal by referencing the specific geofence without ambiguity.
@@ -165,7 +213,10 @@ Supported options:
 import { getRegisteredGeofences } from '@rn-bridge/react-native-geofencing';
 
 const response = await getRegisteredGeofences()
-console.log(response) // [id, ...]
+```
+Response:
+```json
+["id1", "id2", "..."]
 ```
 
 ## Constants
@@ -197,8 +248,12 @@ import { Authorization } from '@rn-bridge/react-native-geofencing';
 import { Geofence, Events } from '@rn-bridge/react-native-geofencing';
 
 Geofence.onEnter((ids: string[]) => {
-  console.log(Events.Enter, ids); // [id1, id2, ...]
+  console.log(Events.Enter, ids);
 });
+```
+Response:
+```json
+["id1", "id2", "..."]
 ```
 
 ### onExit
@@ -206,8 +261,12 @@ Geofence.onEnter((ids: string[]) => {
 import { Geofence, Events } from '@rn-bridge/react-native-geofencing';
 
 Geofence.onExit((ids: string[]) => {
-  console.log(Events.Exit, ids); // [id1, id2, ...]
+  console.log(Events.Exit, ids);
 });
+```
+Response:
+```json
+["id1", "id2", "..."]
 ```
 
 ### removeOnEnterListener
