@@ -177,7 +177,6 @@ const response = await addGeofence({
         longitude: 100.281585,
         radius: 500
     })
-console.log(response)
 ```
 Response:
 ```json
