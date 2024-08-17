@@ -142,6 +142,23 @@ export async function getLocationAuthorizationStatus(): Promise<string> {
   return await Geofencing.getLocationAuthorizationStatus();
 }
 
+type locationType = {
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  name: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  isoCountryCode: string;
+  timeZone: string;
+};
+
+export async function getCurrentLocation(): Promise<locationType> {
+  return await Geofencing.getCurrentLocation();
+}
+
 type paramsType = {
   id: string;
   latitude: number;

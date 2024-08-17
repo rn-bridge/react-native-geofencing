@@ -5,6 +5,7 @@ import {
   getRegisteredGeofences,
   requestLocation,
   getLocationAuthorizationStatus,
+  getCurrentLocation,
 } from '@rn-bridge/react-native-geofencing';
 
 const Button = ({
@@ -47,6 +48,20 @@ export const App = () => {
           const response = await requestLocation({ allowAlways: true });
           console.log('requestLocation:', response);
           Alert.alert('Status', `Location: ${response.location}`);
+        }}
+      />
+
+      <Button
+        textStyle={styles.textStyle}
+        style={styles.button}
+        title="Get Current Location"
+        onPress={async () => {
+          const response = await getCurrentLocation();
+          console.log('getCurrentLocation:', response);
+          Alert.alert(
+            'Status',
+            `Latitude: ${response.latitude}\nLongitude: ${response.longitude}`
+          );
         }}
       />
 

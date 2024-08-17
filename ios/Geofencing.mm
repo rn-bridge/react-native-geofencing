@@ -11,6 +11,9 @@ RCT_EXTERN_METHOD(getLocationAuthorizationStatus:(RCTPromiseResolveBlock)resolve
 RCT_EXTERN_METHOD(requestLocation:(NSDictionary *)params
                   withSuccessCallback:(RCTResponseSenderBlock)successCallback)
 
+RCT_EXTERN_METHOD(getCurrentLocation:(RCTPromiseResolveBlock)resolve
+                  withReject:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(getRegisteredGeofences:(RCTPromiseResolveBlock)resolve
                   withReject:(RCTPromiseRejectBlock)reject)
 

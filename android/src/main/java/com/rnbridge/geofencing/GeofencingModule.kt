@@ -17,6 +17,11 @@ class GeofencingModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
+  fun getCurrentLocation(promise: Promise) {
+    geofenceManager.getCurrentLocation(promise)
+  }
+
+  @ReactMethod
   fun getRegisteredGeofences(promise: Promise) {
     geofenceManager.getRegisteredGeofences(promise)
   }

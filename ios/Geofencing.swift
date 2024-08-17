@@ -25,6 +25,46 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
         resolve(getLocationAuthorizationStatus())
     }
     
+    func geocode(latitude: Double, longitude: Double, callback: @escaping (CLPlacemark?, Error?) -> ())  {
+        CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: latitude, longitude: longitude)) { callback($0?.first, $1)
+        }
+    }
+    
+    @objc(getCurrentLocation: withReject:)
+    func getCurrentLocation(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        
+        if !isLocationAuthorized() {
+            reject("Permission", "Location permission not given", NSError(domain: "getCurrentLocation", code: 200))
+            return
+        }
+        
+        let location = locationManager.location
+        let response: NSMutableDictionary = [:]
+        let latitude = location?.coordinate.latitude ?? 0
+        let longitude = location?.coordinate.longitude ?? 0
+        
+        response["latitude"] = location?.coordinate.latitude
+        response["longitude"] = location?.coordinate.longitude
+        response["altitude"] = location?.altitude
+        
+        geocode(latitude: latitude, longitude: longitude) { placemark, error in
+            guard let placemark = placemark, error == nil else {
+                resolve(response)
+                return
+            }
+            
+            response["name"] = placemark.name
+            response["city"] = placemark.locality
+            response["state"] = placemark.administrativeArea
+            response["postalCode"] = placemark.postalCode
+            response["country"] = placemark.country
+            response["isoCountryCode"] = placemark.isoCountryCode
+            response["timeZone"] = placemark.timeZone?.identifier
+            
+            resolve(response)
+        }
+    }
+    
     @objc(requestLocation: withSuccessCallback:)
     func requestLocation(params: NSDictionary, successCallback: @escaping RCTResponseSenderBlock) {
         
@@ -46,7 +86,7 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
     @objc(getRegisteredGeofences:withReject:)
     func getRegisteredGeofences(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if !isLocationAuthorized() {
-            reject("Permission", "Needed Authorization always but got \(getLocationAuthorizationStatus())", NSError(domain: "getRegisteredGeofences", code: 200))
+            reject("Permission", "Location permission not given", NSError(domain: "getRegisteredGeofences", code: 200))
             return
         }
         
@@ -59,7 +99,7 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
     @objc(addGeofence:withResolve:withReject:)
     func addGeofence(params: NSDictionary, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if !isLocationAuthorized() {
-            reject("Permission", "Needed Authorization always but got \(getLocationAuthorizationStatus())", NSError(domain: "addGeofence", code: 200))
+            reject("Permission", "Location permission not given", NSError(domain: "addGeofence", code: 200))
             return
         }
         
