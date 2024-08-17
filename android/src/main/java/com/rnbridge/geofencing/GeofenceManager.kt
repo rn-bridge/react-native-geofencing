@@ -1,14 +1,20 @@
 package com.rnbridge.geofencing
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.os.Build
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableArray
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_ENTER
@@ -17,6 +23,8 @@ import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.util.Locale
+import java.util.TimeZone
 
 private const val REQUEST_CODE = 1729
 
@@ -37,6 +45,44 @@ class GeofenceManager(private val context: Context) {
     )
   }
 
+  @SuppressLint("MissingPermission")
+  fun getCurrentLocation(promise: Promise) {
+    if (!isForegroundLocationAuthorized()) {
+      promise.reject(Error("Location permission not given"))
+      return
+    }
+    val response = Arguments.createMap()
+    val activity = (context as ReactApplicationContext).currentActivity ?: return
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
+    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+      if (location == null) {
+        promise.reject(Error("Location is undefined"))
+        return@addOnSuccessListener
+      }
+      response.putDouble("latitude", location.latitude)
+      response.putDouble("longitude", location.longitude)
+      response.putDouble("altitude", location.altitude)
+
+      val geocoder = Geocoder(context, Locale.getDefault())
+      geocoder.getAddress(location.latitude, location.longitude) { address ->
+        if (address == null) {
+          promise.resolve(response)
+          return@getAddress
+        }
+
+        response.putString("city", address.locality)
+        response.putString("state", address.adminArea)
+        response.putString("country", address.countryName)
+        response.putString("isoCountryCode", address.countryCode)
+        response.putString("name", address.featureName)
+        response.putString("postalCode", address.postalCode)
+        response.putString("timeZone", TimeZone.getDefault().id)
+
+        promise.resolve(response)
+      }
+    }
+  }
+
   fun getRegisteredGeofences(promise: Promise) {
     val ids = readFromSharedPreferences()
     promise.resolve(ids.toWritableArray())
@@ -49,6 +95,10 @@ class GeofenceManager(private val context: Context) {
     radiusInMeters: Float,
     promise: Promise
   ) {
+    if (!isBackgroundLocationAuthorized()) {
+      promise.reject(Error("Background location permission not given"))
+      return
+    }
     val geofence = listOf(createGeofence(id, location, radiusInMeters))
     client.addGeofences(createGeofencingRequest(geofence), geofencingPendingIntent)
       .addOnSuccessListener {
@@ -167,6 +217,46 @@ class GeofenceManager(private val context: Context) {
 
   private fun List<String>.toWritableArray(): WritableArray {
     return Arguments.fromArray(this.toTypedArray())
+  }
+
+  @Suppress("DEPRECATION")
+  fun Geocoder.getAddress(
+    latitude: Double,
+    longitude: Double,
+    address: (Address?) -> Unit
+  ) {
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      getFromLocation(latitude, longitude, 1) { address(it.firstOrNull()) }
+      return
+    }
+
+    try {
+      address(getFromLocation(latitude, longitude, 1)?.firstOrNull())
+    } catch (e: Exception) {
+      address(null)
+    }
+  }
+
+  private fun isForegroundLocationAuthorized(): Boolean {
+    return ActivityCompat.checkSelfPermission(
+      context,
+      Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+      context,
+      Manifest.permission.ACCESS_COARSE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+  }
+
+  private fun isBackgroundLocationAuthorized(): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      ActivityCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+      ) == PackageManager.PERMISSION_GRANTED
+    } else {
+      return true
+    }
   }
 
   companion object {
