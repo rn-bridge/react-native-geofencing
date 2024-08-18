@@ -1,3 +1,5 @@
+[![npm](https://img.shields.io/npm/v/@rn-bridge/react-native-geofencing.svg)](https://npmjs.com/@rn-bridge/react-native-geofencing) [![React Native](https://img.shields.io/badge/React_Native-21232a?style=flat&logo=react&logoColor=0a7ea4&logoSize=small.svg)]() [![Android](https://img.shields.io/badge/Android-green?style=flat&logo=android&logoColor=white)]() [![iOS](https://img.shields.io/badge/iOS-21232a?style=flat&logo=ios&logoColor=white)]()
+
 # @rn-bridge/react-native-geofencing
 
 Native module to determine if a location is within defined geographical boundaries. Geofencing combines awareness of the user's current location with awareness of the user's proximity to locations that may be of interest. To mark a location of interest, you specify its latitude and longitude. To adjust the proximity for the location, you add a radius. The latitude, longitude, and radius define a geofence, creating a circular area, or fence, around the location of interest.
