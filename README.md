@@ -46,7 +46,7 @@ It’s important to ensure you’ve enabled the necessary background modes. Here
 <br></br>
 Your `Info.plist` should look like this, Explain why the background location is required!!
 
-```java
+```xml
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 <string>This app need your location to provide best feature based on location</string>
 <key>NSLocationWhenInUseUsageDescription</key>
@@ -68,7 +68,7 @@ The first step in requesting geofence monitoring is to request the necessary per
 
 Your `AndroidManifest.xml` should look liks this
 
-```java
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
