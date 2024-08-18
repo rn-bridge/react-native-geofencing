@@ -73,9 +73,20 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
             return
         }
         
+        if allowWhileUsing && isLocationAuthorized() {
+            successCallback([["success": true, "location": getLocationAuthorizationStatus()]])
+            return
+        }
+        
+        if allowAlways && CLLocationManager.authorizationStatus() == .authorizedAlways {
+            successCallback([["success": true, "location": getLocationAuthorizationStatus()]])
+            return
+        }
+        
         self.allowWhileUsing = allowWhileUsing
         self.allowAlways = allowAlways
         authorizationSuccessCallback = successCallback
+        
         if allowAlways && CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
             locationManager.requestAlwaysAuthorization()
         } else {

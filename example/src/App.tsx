@@ -36,7 +36,7 @@ export const App = () => {
 				onPress={async () => {
 					const response = await requestLocation({ allowWhileUsing: true });
 					console.log('requestLocation:', response);
-					Alert.alert('Status', `Location: ${response.location}`);
+					Alert.alert('', `Location: ${response.location}`);
 				}}
 			/>
 
@@ -47,7 +47,7 @@ export const App = () => {
 				onPress={async () => {
 					const response = await requestLocation({ allowAlways: true });
 					console.log('requestLocation:', response);
-					Alert.alert('Status', `Location: ${response.location}`);
+					Alert.alert('', `Location: ${response.location}`);
 				}}
 			/>
 
@@ -59,8 +59,8 @@ export const App = () => {
 					const response = await getCurrentLocation();
 					console.log('getCurrentLocation:', response);
 					Alert.alert(
-						'Status',
-						`Latitude: ${response.latitude}\nLongitude: ${response.longitude}`
+						'',
+						`Latitude: ${response.latitude}\nLongitude: ${response.longitude}\nName: ${response.name}\nCity: ${response.city}\nState: ${response.state}\nCountry: ${response.country}\nPostalCode: ${response.postalCode}`
 					);
 				}}
 			/>
@@ -83,7 +83,7 @@ export const App = () => {
 						? 'Successfully added geofence!!'
 						: 'Failed to add geofence!!';
 
-					Alert.alert('Status', message);
+					Alert.alert('', message);
 				}}
 			/>
 
@@ -102,7 +102,7 @@ export const App = () => {
 						? 'Successfully removed geofence!!'
 						: response.error;
 
-					Alert.alert('Status', message);
+					Alert.alert('', message);
 				}}
 			/>
 
@@ -113,7 +113,9 @@ export const App = () => {
 				onPress={async () => {
 					const response = await getRegisteredGeofences();
 					console.log('getRegisteredGeofences:', response);
-					Alert.alert('Status', JSON.stringify(response));
+					const ids = response.map((id: string, index: number) => `id${index+1}: ${id}`).join("\n")
+					const message = response.length == 0 ? "No geofence registered" : ids
+					Alert.alert('', message);
 				}}
 			/>
 
@@ -124,7 +126,7 @@ export const App = () => {
 				onPress={async () => {
 					const response = await getLocationAuthorizationStatus();
 					console.log('getLocationAuthorizationStatus:', response);
-					Alert.alert('Status', `Location: ${response}`);
+					Alert.alert('', `Location: ${response}`);
 				}}
 			/>
 		</View>
