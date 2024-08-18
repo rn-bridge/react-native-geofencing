@@ -227,6 +227,8 @@ import { Events } from '@rn-bridge/react-native-geofencing';
 | Events.onEnter  |  "onEnter" |
 | Events.onExit  |  "onExit" |
 
+<br/>
+
 ```javascript
 import { Authorization } from '@rn-bridge/react-native-geofencing';
 ```
@@ -238,6 +240,8 @@ import { Authorization } from '@rn-bridge/react-native-geofencing';
 | Authorization.Denied  |  "Denied" |
 | Authorization.NotDetermined  |  "NotDetermined" |
 | Authorization.Unknown  |  "Unknown" |
+
+<br/>
 
 > [!IMPORTANT]
 > ## Listening for location transitions
@@ -295,3 +299,22 @@ import { Geofence } from '@rn-bridge/react-native-geofencing';
 
 Geofence.isOnExitListenerAdded() // true or false
 ```
+
+## How To Run Example App ?
+
+To run example app, follow the below steps
+
+1. Clone the repository
+2. Do `yarn install`
+3. Next navigate to example folder i.e `cd example`
+4. Do `yarn install`
+5. Next navigate to ios folder i.e `cd ios` and do `pod install`, then `cd ..`
+6. For android run `yarn android`
+7. For ios run `yarn ios`
+
+## Demo Video
+
+[Android](https://drive.google.com/file/d/1mEtklNayhUlHxdvW9XB6KYmAgh9zeXUc/preview) 
+<br/>
+[iOS](https://drive.google.com/file/d/1xT3MtUZT8u4nfxe_dM0vuCD-2rrUryH4/preview)
+
