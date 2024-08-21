@@ -16,13 +16,13 @@ const LINKING_ERROR =
 const Geofencing = NativeModules.Geofencing
 	? NativeModules.Geofencing
 	: new Proxy(
-			{},
-			{
-				get() {
-					throw new Error(LINKING_ERROR);
-				}
+		{},
+		{
+			get() {
+				throw new Error(LINKING_ERROR);
 			}
-		);
+		}
+	);
 
 export const Events = {
 	Enter: 'onEnter',
@@ -46,7 +46,7 @@ async function delay(duration: number): Promise<boolean> {
 }
 
 async function onGeofenceTransition(params: { event: string; ids: string[] }) {
-	if (!Geofence.isOnEnterListenerAdded() || !Geofence.isOnExitListenerAdded()) {
+	if (!isOnEnterListenerAdded() || !isOnExitListenerAdded()) {
 		console.log('Listeners not added, waiting for 5sec...');
 		await delay(5000);
 	}
@@ -92,7 +92,7 @@ async function requestAndroidPermissions(
 	};
 }
 
-export async function requestLocation(
+async function requestLocation(
 	params: requestLocationParamsType = {}
 ): Promise<requestLocationResponseType> {
 	const requestParams = {
@@ -135,14 +135,14 @@ async function getLocationAuthorizationStatusAndroid(): Promise<string> {
 	return location;
 }
 
-export async function getLocationAuthorizationStatus(): Promise<string> {
+async function getLocationAuthorizationStatus(): Promise<string> {
 	if (Platform.OS === 'android') {
 		return await getLocationAuthorizationStatusAndroid();
 	}
 	return await Geofencing.getLocationAuthorizationStatus();
 }
 
-type locationType = {
+export type locationType = {
 	latitude: number;
 	longitude: number;
 	altitude: number;
@@ -155,7 +155,7 @@ type locationType = {
 	timeZone: string;
 };
 
-export async function getCurrentLocation(): Promise<locationType> {
+async function getCurrentLocation(): Promise<locationType> {
 	return await Geofencing.getCurrentLocation();
 }
 
@@ -172,7 +172,7 @@ type returnType = {
 	error: string;
 };
 
-export async function addGeofence(
+async function addGeofence(
 	params: paramsType = {} as paramsType
 ): Promise<returnType> {
 	if (!params.id || !params.latitude || !params.longitude || !params.radius) {
@@ -181,14 +181,14 @@ export async function addGeofence(
 	return await Geofencing.addGeofence(params);
 }
 
-export async function removeGeofence(id: string): Promise<returnType> {
+async function removeGeofence(id: string): Promise<returnType> {
 	if (!id) {
 		return Promise.reject('id cannot be null or undefined');
 	}
 	return await Geofencing.removeGeofence(id);
 }
 
-export async function getRegisteredGeofences(): Promise<string[]> {
+async function getRegisteredGeofences(): Promise<string[]> {
 	return await Geofencing.getRegisteredGeofences();
 }
 
@@ -197,30 +197,48 @@ type removeAllGeofenceReturnType = {
 	type: string;
 };
 
-export async function removeAllGeofence(): Promise<removeAllGeofenceReturnType> {
+async function removeAllGeofence(): Promise<removeAllGeofenceReturnType> {
 	return await Geofencing.removeAllGeofence();
 }
 
-export const Geofence = {
-	onEnter: (callback: (ids: string[]) => void): EventSubscription => {
-		return geofencingEventEmitter.addListener(Events.Enter, callback);
-	},
+function onEnter(callback: (ids: string[]) => void): EventSubscription {
+	return geofencingEventEmitter.addListener(Events.Enter, callback);
+}
 
-	onExit: (callback: (ids: string[]) => void): EventSubscription => {
-		return geofencingEventEmitter.addListener(Events.Exit, callback);
-	},
+function onExit(callback: (ids: string[]) => void): EventSubscription {
+	return geofencingEventEmitter.addListener(Events.Exit, callback);
+}
 
-	removeOnEnterListener: (): void => {
-		geofencingEventEmitter.removeAllListeners(Events.Enter);
-	},
+function removeOnEnterListener(): void {
+	geofencingEventEmitter.removeAllListeners(Events.Enter);
+}
 
-	removeOnExitListener: (): void => {
-		geofencingEventEmitter.removeAllListeners(Events.Exit);
-	},
-	isOnEnterListenerAdded: (): boolean => {
-		return geofencingEventEmitter.listenerCount(Events.Enter) > 0;
-	},
-	isOnExitListenerAdded: (): boolean => {
-		return geofencingEventEmitter.listenerCount(Events.Exit) > 0;
-	}
-};
+function removeOnExitListener(): void {
+	geofencingEventEmitter.removeAllListeners(Events.Exit);
+}
+
+function isOnEnterListenerAdded(): boolean {
+	return geofencingEventEmitter.listenerCount(Events.Enter) > 0;
+}
+
+function isOnExitListenerAdded(): boolean {
+	return geofencingEventEmitter.listenerCount(Events.Exit) > 0;
+}
+
+
+export default {
+	requestLocation,
+	getLocationAuthorizationStatus,
+	getCurrentLocation,
+	addGeofence,
+	removeGeofence,
+	getRegisteredGeofences,
+	removeAllGeofence,
+	onEnter,
+	onExit,
+	removeOnEnterListener,
+	removeOnExitListener,
+	isOnEnterListenerAdded,
+	isOnExitListenerAdded,
+	geofencingEventEmitter
+}

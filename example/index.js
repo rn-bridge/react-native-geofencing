@@ -1,13 +1,13 @@
 import { AppRegistry } from 'react-native';
 import { App } from './src/App';
 import { name as appName } from './app.json';
-import { Geofence, Events } from '@rn-bridge/react-native-geofencing';
+import Geofencing, { Events } from '@rn-bridge/react-native-geofencing';
 
-Geofence.onEnter((ids: string[]) => {
+Geofencing.onEnter((ids) => {
 	console.log(Events.Enter, ids);
 });
 
-Geofence.onExit((ids: string[]) => {
+Geofencing.onExit((ids) => {
 	console.log(Events.Exit, ids);
 });
 

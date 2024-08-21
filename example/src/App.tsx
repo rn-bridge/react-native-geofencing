@@ -1,12 +1,5 @@
 import { StyleSheet, View, TouchableOpacity, Text, Alert } from 'react-native';
-import {
-	addGeofence,
-	removeGeofence,
-	getRegisteredGeofences,
-	requestLocation,
-	getLocationAuthorizationStatus,
-	getCurrentLocation
-} from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
 const Button = ({
 	title,
@@ -34,7 +27,7 @@ export const App = () => {
 				style={styles.button}
 				title="Request Location While Using"
 				onPress={async () => {
-					const response = await requestLocation({ allowWhileUsing: true });
+					const response = await Geofencing.requestLocation({ allowWhileUsing: true });
 					console.log('requestLocation:', response);
 					Alert.alert('', `Location: ${response.location}`);
 				}}
@@ -45,7 +38,7 @@ export const App = () => {
 				style={styles.button}
 				title="Request Location Always"
 				onPress={async () => {
-					const response = await requestLocation({ allowAlways: true });
+					const response = await Geofencing.requestLocation({ allowAlways: true });
 					console.log('requestLocation:', response);
 					Alert.alert('', `Location: ${response.location}`);
 				}}
@@ -56,7 +49,7 @@ export const App = () => {
 				style={styles.button}
 				title="Get Current Location"
 				onPress={async () => {
-					const response = await getCurrentLocation();
+					const response = await Geofencing.getCurrentLocation();
 					console.log('getCurrentLocation:', response);
 					Alert.alert(
 						'',
@@ -70,7 +63,7 @@ export const App = () => {
 				style={styles.button}
 				title="Add Geo Fence"
 				onPress={async () => {
-					const response = await addGeofence({
+					const response = await Geofencing.addGeofence({
 						id: 'a9957259-8036-4dcb-974c-34eae9b44bdb',
 						latitude: 10.9314,
 						longitude: 76.9781,
@@ -92,7 +85,7 @@ export const App = () => {
 				style={styles.button}
 				title="Remove Geo Fence"
 				onPress={async () => {
-					const response = await removeGeofence(
+					const response = await Geofencing.removeGeofence(
 						'a9957259-8036-4dcb-974c-34eae9b44bdb'
 					);
 
@@ -111,7 +104,7 @@ export const App = () => {
 				style={styles.button}
 				title="Get Registered Geo Fences"
 				onPress={async () => {
-					const response = await getRegisteredGeofences();
+					const response = await Geofencing.getRegisteredGeofences();
 					console.log('getRegisteredGeofences:', response);
 					const ids = response.map((id: string, index: number) => `id${index+1}: ${id}`).join("\n")
 					const message = response.length == 0 ? "No geofence registered" : ids
@@ -124,7 +117,7 @@ export const App = () => {
 				style={styles.button}
 				title="Get Authorization Status"
 				onPress={async () => {
-					const response = await getLocationAuthorizationStatus();
+					const response = await Geofencing.getLocationAuthorizationStatus();
 					console.log('getLocationAuthorizationStatus:', response);
 					Alert.alert('', `Location: ${response}`);
 				}}
