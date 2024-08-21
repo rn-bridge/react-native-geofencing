@@ -107,9 +107,9 @@ Your `AndroidManifest.xml` should look liks this
 
 ### requestLocation
 ```javascript
-import { requestLocation } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-const response = await requestLocation({ allowWhileUsing: true });
+const response = await Geofencing.requestLocation({ allowWhileUsing: true });
 ```
 Response:
 ```json
@@ -121,9 +121,9 @@ Response:
 
 To request background location:
 ```javascript
-import { requestLocation } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-const response = await requestLocation({ allowAlways: true });
+const response = await Geofencing.requestLocation({ allowAlways: true });
 ```
 Response:
 ```json
@@ -141,17 +141,17 @@ Supported options:
 
 ### getLocationAuthorizationStatus
 ```javascript
-import { getLocationAuthorizationStatus } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-const response = await getLocationAuthorizationStatus();
+const response = await Geofencing.getLocationAuthorizationStatus();
 ```
 Response: `WhileInUse` `Always` `Denied`
 
 ### getCurrentLocation
 ```javascript
-import { getCurrentLocation } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-const response = await getCurrentLocation();
+const response = await Geofencing.getCurrentLocation();
 ```
 Reponse: 
 ```json
@@ -171,9 +171,9 @@ Reponse:
 
 ### addGeofence
 ```javascript
-import { addGeofence } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-const response = await addGeofence({
+const response = await Geofencing.addGeofence({
         id: 'a9957259-8036-4dcb-974c-34eae9b44bdb',
         latitude: 16.153062,
         longitude: 100.281585,
@@ -195,9 +195,9 @@ Supported options:
 
 ### removeGeofence
 ```javascript
-import { removeGeofence } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-const response = await removeGeofence(id)
+const response = await Geofencing.removeGeofence(id)
 ```
 Response:
 ```json
@@ -211,9 +211,9 @@ Supported options:
 
 ### getRegisteredGeofences
 ```javascript
-import { getRegisteredGeofences } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-const response = await getRegisteredGeofences()
+const response = await Geofencing.getRegisteredGeofences()
 ```
 Response:
 ```json
@@ -250,9 +250,9 @@ import { Authorization } from '@rn-bridge/react-native-geofencing';
 
 ### onEnter
 ```javascript
-import { Geofence, Events } from '@rn-bridge/react-native-geofencing';
+import Geofencing, { Events } from '@rn-bridge/react-native-geofencing';
 
-Geofence.onEnter((ids: string[]) => {
+Geofencing.onEnter((ids: string[]) => {
   console.log(Events.Enter, ids);
 });
 ```
@@ -263,9 +263,9 @@ Response:
 
 ### onExit
 ```javascript
-import { Geofence, Events } from '@rn-bridge/react-native-geofencing';
+import Geofencing, { Events } from '@rn-bridge/react-native-geofencing';
 
-Geofence.onExit((ids: string[]) => {
+Geofencing.onExit((ids: string[]) => {
   console.log(Events.Exit, ids);
 });
 ```
@@ -276,30 +276,30 @@ Response:
 
 ### removeOnEnterListener
 ```javascript
-import { Geofence } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-Geofence.removeOnEnterListener()
+Geofencing.removeOnEnterListener()
 ```
 
 ### removeOnExitListener
 ```javascript
-import { Geofence } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-Geofence.removeOnExitListener()
+Geofencing.removeOnExitListener()
 ```
 
 ### isOnEnterListenerAdded
 ```javascript
-import { Geofence } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-Geofence.isOnEnterListenerAdded() // true or false
+Geofencing.isOnEnterListenerAdded() // true or false
 ```
 
 ### isOnExitListenerAdded
 ```javascript
-import { Geofence } from '@rn-bridge/react-native-geofencing';
+import Geofencing from '@rn-bridge/react-native-geofencing';
 
-Geofence.isOnExitListenerAdded() // true or false
+Geofencing.isOnExitListenerAdded() // true or false
 ```
 
 ## How To Run Example App ?

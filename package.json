@@ -1,9 +1,9 @@
 {
   "name": "@rn-bridge/react-native-geofencing",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Native modules to determine if a location is within defined geographical boundaries",
   "source": "./src/index.tsx",
-  "main": "./lib/commonjs/index.js",
+  "main": "./src/index.tsx",
   "module": "./lib/module/index.js",
   "types": "./src/types/index.d.ts",
   "files": [
@@ -112,6 +112,13 @@
       [
         "module",
         {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json",
           "esm": true
         }
       ]

@@ -1,12 +1,5 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
-
-const mockedCallbacks: {
-	onEnter: ((data: string[]) => void)[];
-	onExit: ((data: string[]) => void)[];
-} = {
-	onEnter: [],
-	onExit: []
-};
+import { NativeModules } from 'react-native';
+import Geofencing, { Events } from "../"
 
 jest.mock('react-native', () => {
 	return {
@@ -19,39 +12,13 @@ jest.mock('react-native', () => {
 				getRegisteredGeofences: jest.fn(),
 				removeAllGeofence: jest.fn(),
 				requestLocation: jest.fn(),
-				Geofence: {
-					onEnter: (callback: (data: string[]) => void) => {
-						mockedCallbacks.onEnter.push(callback);
-					},
-					onExit: (callback: (data: string[]) => void) => {
-						mockedCallbacks.onExit.push(callback);
-					},
-					removeOnEnterListener: jest.fn(),
-					removeOnExitListener: jest.fn()
-				}
 			}
 		},
 		NativeEventEmitter: jest.fn().mockImplementation(() => {
 			return {
 				addListener: jest.fn(),
 				removeAllListeners: jest.fn(),
-				emit: (event: string, data: string[]) => {
-					if (event === 'onEnter') {
-						mockedCallbacks.onEnter.map(
-							(callback: (data: string[]) => void) => {
-								callback(data);
-							}
-						);
-
-						mockedCallbacks.onEnter = [];
-					} else if (event === 'onExit') {
-						mockedCallbacks.onExit.map((callback: (data: string[]) => void) => {
-							callback(data);
-						});
-
-						mockedCallbacks.onExit = [];
-					}
-				},
+				emit: jest.fn(),
 				listenerCount: jest.fn().mockReturnValue(1)
 			};
 		}),
@@ -69,7 +36,7 @@ jest.mock('react-native', () => {
 		},
 		Platform: {
 			select: jest.fn(),
-			OS: 'android' // You can switch to 'ios' for testing iOS specific code
+			OS: 'android'
 		},
 		AppRegistry: {
 			registerHeadlessTask: jest.fn()
@@ -78,7 +45,6 @@ jest.mock('react-native', () => {
 });
 
 describe('Geofencing Module', () => {
-	const geofencingEventEmitter = new NativeEventEmitter();
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -100,14 +66,14 @@ describe('Geofencing Module', () => {
 		NativeModules.Geofencing.getCurrentLocation.mockResolvedValueOnce(
 			mockLocation
 		);
-		const location = await NativeModules.Geofencing.getCurrentLocation();
+		const location = await Geofencing.getCurrentLocation();
 		expect(location).toEqual(mockLocation);
 	});
 
 	it('should add a geofence', async () => {
 		const mockResponse = { success: true, id: '1', error: '' };
 		NativeModules.Geofencing.addGeofence.mockResolvedValueOnce(mockResponse);
-		const response = await NativeModules.Geofencing.addGeofence({
+		const response = await Geofencing.addGeofence({
 			id: '1',
 			latitude: 10.0,
 			longitude: 20.0,
@@ -125,7 +91,7 @@ describe('Geofencing Module', () => {
 	it('should remove a geofence', async () => {
 		const mockResponse = { success: true, id: '1', error: '' };
 		NativeModules.Geofencing.removeGeofence.mockResolvedValueOnce(mockResponse);
-		const response = await NativeModules.Geofencing.removeGeofence('1');
+		const response = await Geofencing.removeGeofence('1');
 		expect(response).toEqual(mockResponse);
 		expect(NativeModules.Geofencing.removeGeofence).toHaveBeenCalledWith('1');
 	});
@@ -135,7 +101,7 @@ describe('Geofencing Module', () => {
 		NativeModules.Geofencing.getRegisteredGeofences.mockResolvedValueOnce(
 			mockGeofences
 		);
-		const geofences = await NativeModules.Geofencing.getRegisteredGeofences();
+		const geofences = await Geofencing.getRegisteredGeofences();
 		expect(geofences).toEqual(mockGeofences);
 	});
 
@@ -144,35 +110,29 @@ describe('Geofencing Module', () => {
 		NativeModules.Geofencing.removeAllGeofence.mockResolvedValueOnce(
 			mockResponse
 		);
-		const response = await NativeModules.Geofencing.removeAllGeofence();
+		const response = await Geofencing.removeAllGeofence();
 		expect(response).toEqual(mockResponse);
 	});
 
 	it('should handle geofence enter event', () => {
 		const callback = jest.fn();
-		NativeModules.Geofencing.Geofence.onEnter(callback);
-		geofencingEventEmitter.emit('onEnter', ['1', '2']);
-		expect(callback).toHaveBeenCalledWith(['1', '2']);
+		Geofencing.onEnter(callback);
+		expect(Geofencing.geofencingEventEmitter.addListener).toHaveBeenCalledWith(Events.Enter, callback);
 	});
 
 	it('should handle geofence exit event', () => {
 		const callback = jest.fn();
-		NativeModules.Geofencing.Geofence.onExit(callback);
-		geofencingEventEmitter.emit('onExit', ['3', '4']);
-		expect(callback).toHaveBeenCalledWith(['3', '4']);
+		Geofencing.onExit(callback);
+		expect(Geofencing.geofencingEventEmitter.addListener).toHaveBeenCalledWith(Events.Exit, callback);
 	});
 
 	it('should remove geofence enter listener', () => {
-		NativeModules.Geofencing.Geofence.removeOnEnterListener();
-		expect(
-			NativeModules.Geofencing.Geofence.removeOnEnterListener
-		).toHaveBeenCalled();
+		Geofencing.removeOnEnterListener();
+		expect(Geofencing.geofencingEventEmitter.removeAllListeners).toHaveBeenCalledWith(Events.Enter);
 	});
 
 	it('should remove geofence exit listener', () => {
-		NativeModules.Geofencing.Geofence.removeOnExitListener();
-		expect(
-			NativeModules.Geofencing.Geofence.removeOnExitListener
-		).toHaveBeenCalled();
+		Geofencing.removeOnExitListener();
+		expect(Geofencing.geofencingEventEmitter.removeAllListeners).toHaveBeenCalledWith(Events.Exit);
 	});
 });

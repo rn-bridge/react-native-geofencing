@@ -1,67 +1,78 @@
-import { type EventSubscription } from 'react-native';
+import { NativeEventEmitter, type EventSubscription } from 'react-native';
 export declare const Events: {
-	Enter: string;
-	Exit: string;
+    Enter: string;
+    Exit: string;
 };
 export declare const Authorization: {
-	Always: string;
-	WhenInUse: string;
-	Restricted: string;
-	Denied: string;
-	NotDetermined: string;
-	Unknown: string;
+    Always: string;
+    WhenInUse: string;
+    Restricted: string;
+    Denied: string;
+    NotDetermined: string;
+    Unknown: string;
 };
 type requestLocationParamsType = {
-	allowWhileUsing?: boolean;
-	allowAlways?: boolean;
+    allowWhileUsing?: boolean;
+    allowAlways?: boolean;
 };
 type requestLocationResponseType = {
-	success: boolean;
-	location: string;
+    success: boolean;
+    location: string;
 };
-export declare function requestLocation(
-	params?: requestLocationParamsType
-): Promise<requestLocationResponseType>;
-export declare function getLocationAuthorizationStatus(): Promise<string>;
-type locationType = {
-	latitude: number;
-	longitude: number;
-	altitude: number;
-	name: string;
-	city: string;
-	state: string;
-	country: string;
-	postalCode: string;
-	isoCountryCode: string;
-	timeZone: string;
+declare function requestLocation(params?: requestLocationParamsType): Promise<requestLocationResponseType>;
+declare function getLocationAuthorizationStatus(): Promise<string>;
+export type locationType = {
+    latitude: number;
+    longitude: number;
+    altitude: number;
+    name: string;
+    city: string;
+    state: string;
+    country: string;
+    postalCode: string;
+    isoCountryCode: string;
+    timeZone: string;
 };
-export declare function getCurrentLocation(): Promise<locationType>;
+declare function getCurrentLocation(): Promise<locationType>;
 type paramsType = {
-	id: string;
-	latitude: number;
-	longitude: number;
-	radius: number;
+    id: string;
+    latitude: number;
+    longitude: number;
+    radius: number;
 };
 type returnType = {
-	success: boolean;
-	id: string;
-	error: string;
+    success: boolean;
+    id: string;
+    error: string;
 };
-export declare function addGeofence(params?: paramsType): Promise<returnType>;
-export declare function removeGeofence(id: string): Promise<returnType>;
-export declare function getRegisteredGeofences(): Promise<string[]>;
+declare function addGeofence(params?: paramsType): Promise<returnType>;
+declare function removeGeofence(id: string): Promise<returnType>;
+declare function getRegisteredGeofences(): Promise<string[]>;
 type removeAllGeofenceReturnType = {
-	success: boolean;
-	type: string;
+    success: boolean;
+    type: string;
 };
-export declare function removeAllGeofence(): Promise<removeAllGeofenceReturnType>;
-export declare const Geofence: {
-	onEnter: (callback: (ids: string[]) => void) => EventSubscription;
-	onExit: (callback: (ids: string[]) => void) => EventSubscription;
-	removeOnEnterListener: () => void;
-	removeOnExitListener: () => void;
-	isOnEnterListenerAdded: () => boolean;
-	isOnExitListenerAdded: () => boolean;
+declare function removeAllGeofence(): Promise<removeAllGeofenceReturnType>;
+declare function onEnter(callback: (ids: string[]) => void): EventSubscription;
+declare function onExit(callback: (ids: string[]) => void): EventSubscription;
+declare function removeOnEnterListener(): void;
+declare function removeOnExitListener(): void;
+declare function isOnEnterListenerAdded(): boolean;
+declare function isOnExitListenerAdded(): boolean;
+declare const _default: {
+    requestLocation: typeof requestLocation;
+    getLocationAuthorizationStatus: typeof getLocationAuthorizationStatus;
+    getCurrentLocation: typeof getCurrentLocation;
+    addGeofence: typeof addGeofence;
+    removeGeofence: typeof removeGeofence;
+    getRegisteredGeofences: typeof getRegisteredGeofences;
+    removeAllGeofence: typeof removeAllGeofence;
+    onEnter: typeof onEnter;
+    onExit: typeof onExit;
+    removeOnEnterListener: typeof removeOnEnterListener;
+    removeOnExitListener: typeof removeOnExitListener;
+    isOnEnterListenerAdded: typeof isOnEnterListenerAdded;
+    isOnExitListenerAdded: typeof isOnExitListenerAdded;
+    geofencingEventEmitter: NativeEventEmitter;
 };
-export {};
-//# sourceMappingURL=index.d.ts.map
+export default _default;
