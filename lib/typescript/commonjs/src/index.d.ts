@@ -76,3 +76,4 @@ declare const _default: {
     geofencingEventEmitter: NativeEventEmitter;
 };
 export default _default;
+//# sourceMappingURL=index.d.ts.map
