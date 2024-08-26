@@ -88,7 +88,7 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
         authorizationSuccessCallback = successCallback
         
         if allowAlways && CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
-            locationManager.requestAlwaysAuthorization()
+            requestAlwaysAuthorization()
         } else {
             locationManager.requestWhenInUseAuthorization()
         }
@@ -203,7 +203,7 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
             authorizationSuccessCallback?([["success": true, "location": getLocationAuthorizationStatus()]])
         } else if status == .authorizedWhenInUse {
             if self.allowAlways  {
-                locationManager.requestAlwaysAuthorization()
+                requestAlwaysAuthorization()
             } else {
                 authorizationSuccessCallback?([["success": true, "location": getLocationAuthorizationStatus()]])
             }
@@ -238,6 +238,22 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
         }
         
         return message
+    }
+    
+    private func requestAlwaysAuthorization() {
+        if isBackgroundLocationUpdatesEnabled() {
+            locationManager.requestAlwaysAuthorization()
+        } else {
+            authorizationSuccessCallback?([["success": false, "location": getLocationAuthorizationStatus(), "reason": "Location updates background mode is not enabled"]])
+            authorizationSuccessCallback = nil
+        }
+    }
+    
+    private func isBackgroundLocationUpdatesEnabled() -> Bool {
+        if let backgroundModes = Bundle.main.object(forInfoDictionaryKey: "UIBackgroundModes") as? [String] {
+            return backgroundModes.contains("location")
+        }
+        return false
     }
     
 }
