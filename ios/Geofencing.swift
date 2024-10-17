@@ -83,11 +83,6 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
             return
         }
         
-        if CLLocationManager.authorizationStatus() != .notDetermined {
-            successCallback([["success": true, "location": getLocationAuthorizationStatus()]])
-            return
-        }
-        
         self.allowWhileUsing = allowWhileUsing
         self.allowAlways = allowAlways
         authorizationSuccessCallback = successCallback
@@ -206,17 +201,19 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
         if status == .authorizedAlways {
             locationManager.allowsBackgroundLocationUpdates = true
             authorizationSuccessCallback?([["success": true, "location": getLocationAuthorizationStatus()]])
+            authorizationSuccessCallback = nil
         } else if status == .authorizedWhenInUse {
             if self.allowAlways  {
                 requestAlwaysAuthorization()
             } else {
                 authorizationSuccessCallback?([["success": true, "location": getLocationAuthorizationStatus()]])
+                authorizationSuccessCallback = nil
             }
         } else {
             authorizationSuccessCallback?([["success": false, "location": getLocationAuthorizationStatus()]])
+            authorizationSuccessCallback = nil
         }
         
-        authorizationSuccessCallback = nil
     }
     
     private func isLocationAuthorized() -> Bool {

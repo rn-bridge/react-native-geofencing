@@ -1,6 +1,6 @@
 {
   "name": "@rn-bridge/react-native-geofencing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Native modules to determine if a location is within defined geographical boundaries",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
