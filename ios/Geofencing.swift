@@ -83,6 +83,11 @@ class Geofencing: RCTEventEmitter, CLLocationManagerDelegate {
             return
         }
         
+        if CLLocationManager.authorizationStatus() != .notDetermined {
+            successCallback([["success": true, "location": getLocationAuthorizationStatus()]])
+            return
+        }
+        
         self.allowWhileUsing = allowWhileUsing
         self.allowAlways = allowAlways
         authorizationSuccessCallback = successCallback
