@@ -21,6 +21,8 @@ import com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_ENTER
 import com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_EXIT
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.Locale
@@ -54,7 +56,10 @@ class GeofenceManager(private val context: Context) {
     val response = Arguments.createMap()
     val activity = (context as ReactApplicationContext).currentActivity ?: return
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
-    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+    fusedLocationClient.getCurrentLocation(
+      Priority.PRIORITY_HIGH_ACCURACY,
+      CancellationTokenSource().token
+    ).addOnSuccessListener { location: Location? ->
       if (location == null) {
         promise.reject(Error("Location is undefined"))
         return@addOnSuccessListener
