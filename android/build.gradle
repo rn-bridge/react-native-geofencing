@@ -1,5 +1,4 @@
 import com.android.Version
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   // Buildscript is evaluated before everything else so we can't use getExtOrDefault
