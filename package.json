@@ -79,6 +79,14 @@
       "<rootDir>/lib/"
     ]
   },
+  "codegenConfig": {
+    "name": "geofencing",
+    "type": "modules",
+    "jsSrcsDir": "./src",
+    "android": {
+      "javaPackageName": "com.rnbridge.geofencing"
+    }
+  },
   "packageManager": "yarn@3.6.1",
   "eslintConfig": {
     "root": true,
