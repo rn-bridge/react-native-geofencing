@@ -52,10 +52,17 @@ static def supportsNamespace() {
 android {
     if (supportsNamespace()) {
         namespace "com.rnbridge.geofencing"
+    }
 
-        sourceSets {
-            main {
+    sourceSets {
+        main {
+            if (supportsNamespace()) {
                 manifest.srcFile "src/main/AndroidManifestNew.xml"
+            }
+            if (isNewArchitectureEnabled()) {
+                java.srcDirs += ['src/newarch']
+            } else {
+                java.srcDirs += ['src/oldarch']
             }
         }
     }
@@ -65,7 +72,7 @@ android {
     defaultConfig {
         minSdkVersion getExtOrIntegerDefault("minSdkVersion")
         targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
-
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
     }
 
     buildTypes {
@@ -76,6 +83,10 @@ android {
 
     lintOptions {
         disable "GradleCompatible"
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 }
 

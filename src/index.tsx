@@ -1,11 +1,15 @@
 import {
-	NativeModules,
 	Platform,
 	AppRegistry,
 	NativeEventEmitter,
 	type EventSubscription,
-	PermissionsAndroid
+	PermissionsAndroid,
+	type NativeModule,
+	NativeModules
 } from 'react-native';
+import { type LocationType, type RequestLocationParamsType, type RequestLocationResponseType } from "./NativeGeofencing"
+
+const RNGeofencingModule = require("./NativeGeofencing").default ?? NativeModules.RNGeofencing
 
 const LINKING_ERROR =
 	`The package '@rn-bridge/react-native-geofencing' doesn't seem to be linked. Make sure: \n\n` +
@@ -13,8 +17,8 @@ const LINKING_ERROR =
 	'- You rebuilt the app after installing the package\n' +
 	'- You are not using Expo Go\n';
 
-const Geofencing = NativeModules.Geofencing
-	? NativeModules.Geofencing
+const RNGeofencing = RNGeofencingModule
+	? RNGeofencingModule
 	: new Proxy(
 		{},
 		{
@@ -23,6 +27,13 @@ const Geofencing = NativeModules.Geofencing
 			}
 		}
 	);
+
+const emitterModule = Platform.select({
+	ios: RNGeofencingModule,
+	android: null
+  }) as unknown as NativeModule | undefined
+  
+const geofencingEventEmitter = new NativeEventEmitter(emitterModule);
 
 export const Events = {
 	Enter: 'onEnter',
@@ -37,9 +48,6 @@ export const Authorization = {
 	NotDetermined: 'NotDetermined',
 	Unknown: 'Unknown'
 };
-
-const nativeModule = Platform.OS === 'ios' ? Geofencing : null;
-const geofencingEventEmitter = new NativeEventEmitter(nativeModule);
 
 async function delay(duration: number): Promise<boolean> {
 	return new Promise((resolve) => setTimeout(() => resolve(true), duration));
@@ -59,19 +67,9 @@ AppRegistry.registerHeadlessTask(
 	() => onGeofenceTransition
 );
 
-type requestLocationParamsType = {
-	allowWhileUsing?: boolean;
-	allowAlways?: boolean;
-};
-
-type requestLocationResponseType = {
-	success: boolean;
-	location: string;
-};
-
 async function requestAndroidPermissions(
-	params: requestLocationParamsType
-): Promise<requestLocationResponseType> {
+	params: RequestLocationParamsType
+): Promise<RequestLocationResponseType> {
 	let granted = await PermissionsAndroid.request(
 		//@ts-ignore
 		PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
@@ -93,8 +91,8 @@ async function requestAndroidPermissions(
 }
 
 async function requestLocation(
-	params: requestLocationParamsType = {}
-): Promise<requestLocationResponseType> {
+	params: RequestLocationParamsType = {}
+): Promise<RequestLocationResponseType> {
 	const requestParams = {
 		allowWhileUsing: params.allowWhileUsing ?? false,
 		allowAlways: params.allowAlways ?? false
@@ -103,9 +101,9 @@ async function requestLocation(
 		return requestAndroidPermissions(requestParams);
 	}
 	return new Promise((resolve) => {
-		Geofencing.requestLocation(
+		RNGeofencing.requestLocation(
 			requestParams,
-			(response: requestLocationResponseType) => {
+			(response: RequestLocationResponseType) => {
 				resolve(response);
 			}
 		);
@@ -139,24 +137,11 @@ async function getLocationAuthorizationStatus(): Promise<string> {
 	if (Platform.OS === 'android') {
 		return await getLocationAuthorizationStatusAndroid();
 	}
-	return await Geofencing.getLocationAuthorizationStatus();
+	return RNGeofencing.getLocationAuthorizationStatus();
 }
 
-export type locationType = {
-	latitude: number;
-	longitude: number;
-	altitude: number;
-	name: string;
-	city: string;
-	state: string;
-	country: string;
-	postalCode: string;
-	isoCountryCode: string;
-	timeZone: string;
-};
-
-async function getCurrentLocation(): Promise<locationType> {
-	return await Geofencing.getCurrentLocation();
+async function getCurrentLocation(): Promise<LocationType> {
+	return RNGeofencing.getCurrentLocation();
 }
 
 type paramsType = {
@@ -178,27 +163,22 @@ async function addGeofence(
 	if (!params.id || !params.latitude || !params.longitude || !params.radius) {
 		return Promise.reject('invalid parameters');
 	}
-	return await Geofencing.addGeofence(params);
+	return RNGeofencing.addGeofence(params);
 }
 
 async function removeGeofence(id: string): Promise<returnType> {
 	if (!id) {
 		return Promise.reject('id cannot be null or undefined');
 	}
-	return await Geofencing.removeGeofence(id);
+	return RNGeofencing.removeGeofence(id);
 }
 
 async function getRegisteredGeofences(): Promise<string[]> {
-	return await Geofencing.getRegisteredGeofences();
+	return RNGeofencing.getRegisteredGeofences();
 }
 
-type removeAllGeofenceReturnType = {
-	success: boolean;
-	type: string;
-};
-
-async function removeAllGeofence(): Promise<removeAllGeofenceReturnType> {
-	return await Geofencing.removeAllGeofence();
+async function removeAllGeofence(): Promise<{success: boolean; type: string}> {
+	return RNGeofencing.removeAllGeofence();
 }
 
 function onEnter(callback: (ids: string[]) => void): EventSubscription {
@@ -239,6 +219,5 @@ export default {
 	removeOnEnterListener,
 	removeOnExitListener,
 	isOnEnterListenerAdded,
-	isOnExitListenerAdded,
-	geofencingEventEmitter
+	isOnExitListenerAdded
 }
