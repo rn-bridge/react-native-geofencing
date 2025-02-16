@@ -1,8 +1,8 @@
 import CoreLocation
 import React
 
-@objc(Geofencing)
-public class Geofencing: NSObject, CLLocationManagerDelegate {
+@objc(RNGeofencingImpl)
+public class RNGeofencingImpl: NSObject, CLLocationManagerDelegate {
 
     private var locationManager: CLLocationManager
     private var hasListeners = false

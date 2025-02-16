@@ -13,7 +13,7 @@
 
 RCT_EXPORT_MODULE()
 
-Geofencing *geofencing = [[Geofencing alloc] init];
+RNGeofencingImpl *rnGeofencingImpl = [[RNGeofencingImpl alloc] init];
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -23,21 +23,21 @@ Geofencing *geofencing = [[Geofencing alloc] init];
 - (instancetype)init {
     self = [super init];
     if (self) {
-        [geofencing setEventEmitter: self];
+        [rnGeofencingImpl setEventEmitter: self];
     }
     return self;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return [geofencing supportedEvents];
+    return [rnGeofencingImpl supportedEvents];
 }
 
 - (void)startObserving {
-    return [geofencing startObserving];
+    return [rnGeofencingImpl startObserving];
 }
 
 - (void)stopObserving {
-    return [geofencing stopObserving];
+    return [rnGeofencingImpl stopObserving];
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -62,32 +62,32 @@ Geofencing *geofencing = [[Geofencing alloc] init];
 #ifdef RCT_NEW_ARCH_ENABLED
 - (void)addGeofence:(JS::NativeGeofencing::SpecAddGeofenceParams &)params resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
     NSDictionary *mutableParams = [self convertGeofenceParamsToDictionary:params];
-    return [geofencing addGeofence: mutableParams withResolve: resolve withReject: reject];
+    return [rnGeofencingImpl addGeofence: mutableParams withResolve: resolve withReject: reject];
 }
 #else
 RCT_EXPORT_METHOD(addGeofence:(NSDictionary *)params resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
-    return [geofencing addGeofence: params withResolve: resolve withReject: reject];
+    return [rnGeofencingImpl addGeofence: params withResolve: resolve withReject: reject];
 }
 #endif
 
 RCT_EXPORT_METHOD(getCurrentLocation:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
-    return [geofencing getCurrentLocation: resolve withReject: reject];
+    return [rnGeofencingImpl getCurrentLocation: resolve withReject: reject];
 }
 
 RCT_EXPORT_METHOD(getLocationAuthorizationStatus:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
-    return [geofencing getLocationAuthorizationStatus: resolve withReject: reject];
+    return [rnGeofencingImpl getLocationAuthorizationStatus: resolve withReject: reject];
 }
 
 RCT_EXPORT_METHOD(getRegisteredGeofences:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
-    return [geofencing getRegisteredGeofences: resolve withReject: reject];
+    return [rnGeofencingImpl getRegisteredGeofences: resolve withReject: reject];
 }
 
 RCT_EXPORT_METHOD(removeAllGeofence:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
-    return [geofencing removeAllGeofence: resolve withReject: reject];
+    return [rnGeofencingImpl removeAllGeofence: resolve withReject: reject];
 }
 
 RCT_EXPORT_METHOD(removeGeofence:(nonnull NSString *)id resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
-    return [geofencing removeGeofence: id withResolve: resolve withReject: reject];
+    return [rnGeofencingImpl removeGeofence: id withResolve: resolve withReject: reject];
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -96,12 +96,12 @@ RCT_EXPORT_METHOD(removeGeofence:(nonnull NSString *)id resolve:(nonnull RCTProm
     dict[@"allowWhileUsing"] = @(params.allowWhileUsing() ? params.allowWhileUsing().value() : NO);
     dict[@"allowAlways"] = @(params.allowAlways() ? params.allowAlways().value() : NO);
 
-    return [geofencing requestLocation: dict withSuccessCallback: response];
+    return [rnGeofencingImpl requestLocation: dict withSuccessCallback: response];
 }
 
 #else
 RCT_EXPORT_METHOD(requestLocation:(NSDictionary *)params response:(nonnull RCTResponseSenderBlock)response) {
-    return [geofencing requestLocation: params withSuccessCallback: response];
+    return [rnGeofencingImpl requestLocation: params withSuccessCallback: response];
 }
 
 #endif
