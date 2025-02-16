@@ -2,9 +2,9 @@
 
 # @rn-bridge/react-native-geofencing
 
-Native module to determine if a location is within defined geographical boundaries. Geofencing combines awareness of the user's current location with awareness of the user's proximity to locations that may be of interest. To mark a location of interest, you specify its latitude and longitude. To adjust the proximity for the location, you add a radius. The latitude, longitude, and radius define a geofence, creating a circular area, or fence, around the location of interest.
+React native module to determine if a location is within defined geographical boundaries. Geofencing combines awareness of the user's current location with awareness of the user's proximity to locations that may be of interest. To mark a location of interest, you specify its latitude and longitude. To adjust the proximity for the location, you add a radius. The latitude, longitude, and radius define a geofence, creating a circular area, or fence, around the location of interest.
 
-Fully compatible with TypeScript.
+Fully compatible with TypeScript & Turbomodules.
 
 ## Supported platforms
 
