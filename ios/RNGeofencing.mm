@@ -7,7 +7,11 @@
 #import "react-native-geofencing/RNGeofencing-Bridging-Header.h"
 #endif
 
+#if __has_include("react_native_geofencing-Swift.h")
 #import "react_native_geofencing-Swift.h"
+#else
+#import "react_native_geofencing/react_native_geofencing-Swift.h"
+#endif
 
 @implementation RNGeofencing
 
