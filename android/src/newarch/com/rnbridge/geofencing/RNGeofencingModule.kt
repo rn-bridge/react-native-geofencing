@@ -49,6 +49,10 @@ class RNGeofencingModule(reactContext: ReactApplicationContext) :
 
     override fun getLocationAuthorizationStatus(promise: Promise) {}
 
+    override fun addListener(eventType: String) {}
+
+    override fun removeListeners(count: Double) {}
+    
     companion object {
         const val NAME = "RNGeofencing"
     }
