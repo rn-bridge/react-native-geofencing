@@ -195,6 +195,11 @@ Supported options:
 * `longitude` (Double) - The latitude and longitude are used to define the precise geographical location of the geofence’s center. This ensures accurate detection when a device enters or exits the geofenced area.
 * `radius` (Integer) - The radius defines the boundary of the geofence around the central point (latitude and longitude). It allows for flexibility in creating different-sized geofences
 
+### Choose the optimal radius for your geofence
+For best results, the minimum radius of the geofence should be set between 100 - 150 meters. When Wi-Fi is available location accuracy is usually between 20 - 50 meters. When indoor location is available, the accuracy range can be as small as 5 meters. Unless you know indoor location is available inside the geofence, assume that Wi-Fi location accuracy is about 50 meters.
+
+When Wi-Fi location isn't available (for example, when you are driving in rural areas) the location accuracy degrades. The accuracy range can be as large as several hundred meters to several kilometers. In cases like this, you should create geofences using a larger radius.
+
 ### removeGeofence
 ```javascript
 import Geofencing from '@rn-bridge/react-native-geofencing';
@@ -303,6 +308,14 @@ import Geofencing from '@rn-bridge/react-native-geofencing';
 
 Geofencing.isOnExitListenerAdded() // true or false
 ```
+
+### Troubleshoot the geofence entrance event (Android)
+
+Here are some possible reasons for alerts not working as expected:
+
+* Accurate location isn't available inside your geofence or your geofence is too small. On most devices, the geofence service uses only network location for geofence triggering. The service uses this approach because network location consumes much less power, it takes less time to get discrete locations, and most importantly it’s available indoors.
+* There is no reliable network connectivity inside your geofence. If there is no reliable data connection, alerts might not be generated. This is because the geofence service depends on the network location provider which in turn requires a data connection.
+* Alerts can be late. The geofence service doesn't continuously query for location, so expect some latency when receiving alerts. Usually the latency is less than 2 minutes, even less when the device has been moving. If Background Location Limits are in effect, the latency is about 2-3 minutes on average. If the device has been stationary for a significant period of time, the latency may increase (up to 6 minutes).
 
 ## How To Run Example App ?
 
