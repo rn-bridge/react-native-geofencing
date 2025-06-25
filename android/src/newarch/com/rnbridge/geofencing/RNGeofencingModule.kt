@@ -19,6 +19,10 @@ class RNGeofencingModule(reactContext: ReactApplicationContext) :
         geofenceManager.getCurrentLocation(promise)
     }
 
+    override fun isLocationServicesEnabled(promise: Promise) {
+        geofenceManager.isLocationServicesEnabled(promise)
+    }
+
     override fun getRegisteredGeofences(promise: Promise) {
         geofenceManager.getRegisteredGeofences(promise)
     }

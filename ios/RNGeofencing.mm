@@ -78,6 +78,10 @@ RCT_EXPORT_METHOD(getCurrentLocation:(nonnull RCTPromiseResolveBlock)resolve rej
     return [rnGeofencingImpl getCurrentLocation: resolve withReject: reject];
 }
 
+RCT_EXPORT_METHOD(isLocationServicesEnabled:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
+    return [rnGeofencingImpl isLocationServicesEnabled: resolve withReject: reject];
+}
+
 RCT_EXPORT_METHOD(getLocationAuthorizationStatus:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     return [rnGeofencingImpl getLocationAuthorizationStatus: resolve withReject: reject];
 }
