@@ -90,6 +90,7 @@ Your `AndroidManifest.xml` should look liks this
 * [`requestLocation`](#requestLocation)
 * [`getLocationAuthorizationStatus`](#getLocationAuthorizationStatus)
 * [`getCurrentLocation`](#getCurrentLocation)
+* [`isLocationServicesEnabled`](#isLocationServicesEnabled)
 * [`addGeofence`](#addGeofence)
 * [`removeGeofence`](#removeGeofence)
 * [`getRegisteredGeofences`](#getRegisteredGeofences)
@@ -170,6 +171,14 @@ Reponse:
   "timeZone": "Asia/Kolkata"
 }
 ```
+
+### isLocationServicesEnabled
+```javascript
+import Geofencing from '@rn-bridge/react-native-geofencing';
+
+const response = await Geofencing.isLocationServicesEnabled();
+```
+Response: `true` `false`
 
 ### addGeofence
 ```javascript

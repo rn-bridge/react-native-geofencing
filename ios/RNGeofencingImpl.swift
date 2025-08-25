@@ -80,6 +80,16 @@ public class RNGeofencingImpl: NSObject, CLLocationManagerDelegate {
             resolve(response)
         }
     }
+    
+    @objc(isLocationServicesEnabled:withReject:)
+    public func isLocationServicesEnabled(
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject: @escaping RCTPromiseRejectBlock
+    ) {
+        let isEnabled = CLLocationManager.locationServicesEnabled()
+        
+        resolve(isEnabled)
+    }
 
     @objc(requestLocation:withSuccessCallback:)
     public func requestLocation(

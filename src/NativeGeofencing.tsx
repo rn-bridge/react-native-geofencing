@@ -28,6 +28,7 @@ export interface Spec extends TurboModule {
 	requestLocation(params: RequestLocationParamsType, response: (response: RequestLocationResponseType) => void): void;
 	getLocationAuthorizationStatus(): Promise<string>;
 	getCurrentLocation(): Promise<LocationType>;
+	isLocationServicesEnabled(): Promise<boolean>;
 	addGeofence(params: { id: string; latitude: number; longitude: number; radius: number }): Promise<{ success: boolean; id: string; error: string }>;
 	removeGeofence(id: string): Promise<{ success: boolean; id: string; error: string }>;
 	getRegisteredGeofences(): Promise<string[]>;

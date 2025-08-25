@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -85,6 +86,18 @@ class GeofenceManager(private val context: Context) {
 
                 promise.resolve(response)
             }
+        }
+    }
+
+    fun isLocationServicesEnabled(promise: Promise) {
+        try {
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+            val isEnabled = locationManager != null &&
+                    (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+            promise.resolve(isEnabled)
+        } catch (e: Exception) {
+            promise.reject(Error("Failed to check if location services are enabled"))
         }
     }
 

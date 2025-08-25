@@ -61,6 +61,22 @@ export const App = () => {
 			<Button
 				textStyle={styles.textStyle}
 				style={styles.button}
+				title="Check Location Services Status"
+				onPress={async () => {
+					const response = await Geofencing.isLocationServicesEnabled();
+					console.log('isLocationServicesEnabled:', response);
+					Alert.alert(
+						'',
+						response
+						? 'Location services are currently enabled on this device.'
+						: 'Location services are disabled.'
+					);
+				}}
+			/>
+
+			<Button
+				textStyle={styles.textStyle}
+				style={styles.button}
 				title="Add Geo Fence"
 				onPress={async () => {
 					const response = await Geofencing.addGeofence({

@@ -144,6 +144,10 @@ async function getCurrentLocation(): Promise<LocationType> {
 	return RNGeofencing.getCurrentLocation();
 }
 
+async function isLocationServicesEnabled(): Promise<boolean> {
+	return RNGeofencing.isLocationServicesEnabled();
+}
+
 type paramsType = {
 	id: string;
 	latitude: number;
@@ -210,6 +214,7 @@ export default {
 	requestLocation,
 	getLocationAuthorizationStatus,
 	getCurrentLocation,
+	isLocationServicesEnabled,
 	addGeofence,
 	removeGeofence,
 	getRegisteredGeofences,

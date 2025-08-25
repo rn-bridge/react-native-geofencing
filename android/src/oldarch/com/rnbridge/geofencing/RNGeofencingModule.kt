@@ -22,6 +22,11 @@ class RNGeofencingModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun isLocationServicesEnabled(promise: Promise) {
+        geofenceManager.isLocationServicesEnabled(promise)
+    }
+
+    @ReactMethod
     fun getRegisteredGeofences(promise: Promise) {
         geofenceManager.getRegisteredGeofences(promise)
     }
